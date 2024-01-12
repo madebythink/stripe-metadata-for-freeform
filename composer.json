@@ -2,7 +2,6 @@
     "name": "madebythink/stripe-metadata-for-freeform",
     "description": "Provides simplified support for Stripe metadata fields for the Freeform CraftCMS plugin",
     "type": "craft-plugin",
-    "version": "0.1.0",
     "keywords": [
       "craft",
       "cms",
