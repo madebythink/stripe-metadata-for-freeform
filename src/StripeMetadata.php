@@ -13,8 +13,7 @@ namespace madebythink\stripemetadataforfreeform;
 use Craft;
 use craft\base\Plugin;
 
-use \Solspace\Freeform\Freeform;
-
+use Solspace\Freeform\Freeform;
 use Solspace\Freeform\Services\SubmissionsService;
 
 use yii\base\Event;
