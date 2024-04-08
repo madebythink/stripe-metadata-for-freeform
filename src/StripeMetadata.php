@@ -14,7 +14,10 @@ use Craft;
 use craft\base\Plugin;
 
 use Solspace\Freeform\Freeform;
-use Solspace\Freeform\Services\SubmissionsService;
+use Solspace\Freeform\Library\Composer\Components\Form;
+use Solspace\Freeform\Services\FormsService;
+use Solspace\Freeform\Events\Forms\SubmitEvent;
+use Solspace\Freeform\Events\Forms\AfterSubmitEvent;
 
 use yii\base\Event;
 
@@ -75,20 +78,39 @@ class StripeMetadata extends Plugin
     // =========================================================================
 
     protected function initEventHandlers() {
-        Event::on(
-            SubmissionsService::class,
-            SubmissionsService::EVENT_AFTER_SUBMIT,
-            function (Event $event) {
-                $submission = $event->getSubmission();
-                $form = $submission->getForm();
+        if (version_compare(Freeform::getInstance()->version, '3.12', '<')) {
+            Event::on(
+                FormsService::class,
+                FormsService::EVENT_AFTER_SUBMIT,
+                $this->eventHandler,
+            );
+        } else {
+            Event::on(
+                Form::class,
+                Form::EVENT_AFTER_SUBMIT,
+                $this->eventHandler
+            );
+        }
+    }
 
-                if ($submission->id && Freeform::getInstance()->payments->getBySubmissionId($submission->id)) {
-                    $this->attachPaymentMetadata($event);
-                } elseif ($submission->id && Freeform::getInstance()->subscriptions->getBySubmissionId($submission->id)) {
-                    $this->attachSubscriptionMetadata($event);
-                }
+    protected function eventHandler($event) {
+        try {
+            Craft::info('Processing submit event', 'StripeMetadata');
+            $submission = $event->getSubmission();
+
+            if ($submission->id && Freeform::getInstance()->payments->getBySubmissionId($submission->id)) {
+                Craft::info('Processing single payment', 'StripeMetadata');
+                $this->attachPaymentMetadata($event);
+            } elseif ($submission->id && Freeform::getInstance()->subscriptions->getBySubmissionId($submission->id)) {
+                Craft::info('Processing subscription', 'StripeMetadata');
+                $this->attachSubscriptionMetadata($event);
+            } else {
+                Craft::info('No payment', 'StripeMetadata');
             }
-        );
+        } catch (\Exception $exception) {
+            Craft::error('Error occurred processing metadata', 'StripeMetadata');
+            Craft::error($exception->getMessage());
+        }
     }
 
     protected function attachSubscriptionMetadata($event) {
@@ -102,8 +124,13 @@ class StripeMetadata extends Plugin
                 $metadata[$ref] = $field->getValue();
             }
         }
+
+        if (!$metadata) {
+            Craft::info("no metadata to update");
+            return;
+        }
+
         Craft::info("Updating subscription metadata");
-        Craft::info(print_r($metadata, true));
 
         $subscription = Freeform::getInstance()->subscriptions->getBySubmissionId($submission->id);
         $integration = $subscription->getIntegration();
@@ -113,8 +140,20 @@ class StripeMetadata extends Plugin
             return;
 
         $access_token = $integration->fetchAccessToken();
-
         \Stripe\Stripe::setApiKey($access_token);
+        
+        $stripeSubscription = \Stripe\Subscription::retrieve($subscription->resourceId);
+
+        if ($stripeSubscription->charges->data) {
+            $ch = $stripeSubscription->charges->data[0];
+            \Stripe\Charge::update(
+                $ch->id,
+                [
+                    'metadata' => $metadata,
+                ]
+            );
+        }
+
         \Stripe\Subscription::update(
           $subscription->resourceId,
           [
@@ -134,8 +173,13 @@ class StripeMetadata extends Plugin
                 $metadata[$ref] = $field->getValue();
             }
         }
+
+        if (!$metadata) {
+            Craft::info("no metadata to update");
+            return;
+        }
+
         Craft::info("Updating payment metadata");
-        Craft::info(print_r($metadata, true));
 
         $payment = Freeform::getInstance()->payments->getBySubmissionId($submission->id);
         $integration = $payment->getIntegration();
