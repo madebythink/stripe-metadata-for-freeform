@@ -42,7 +42,7 @@ class StripeMetadata extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '0.1.0';
+    public string $schemaVersion = '0.1.0';
 
     // Public Methods
     // =========================================================================
@@ -82,13 +82,17 @@ class StripeMetadata extends Plugin
             Event::on(
                 FormsService::class,
                 FormsService::EVENT_AFTER_SUBMIT,
-                $this->eventHandler,
+                function ($event) {
+                    $this->eventHandler($event);
+                },
             );
         } else {
             Event::on(
                 Form::class,
                 Form::EVENT_AFTER_SUBMIT,
-                $this->eventHandler
+                function ($event) {
+                    $this->eventHandler($event);
+                },
             );
         }
     }
@@ -141,18 +145,6 @@ class StripeMetadata extends Plugin
 
         $access_token = $integration->fetchAccessToken();
         \Stripe\Stripe::setApiKey($access_token);
-        
-        $stripeSubscription = \Stripe\Subscription::retrieve($subscription->resourceId);
-
-        if ($stripeSubscription->charges->data) {
-            $ch = $stripeSubscription->charges->data[0];
-            \Stripe\Charge::update(
-                $ch->id,
-                [
-                    'metadata' => $metadata,
-                ]
-            );
-        }
 
         \Stripe\Subscription::update(
           $subscription->resourceId,
