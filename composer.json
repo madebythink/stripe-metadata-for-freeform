@@ -25,8 +25,8 @@
       "docs": "https://github.com/madebythink/stripe-metadata-for-freeform/blob/master/README.md"
     },
     "require": {
-      "craftcms/cms": "^3.1.0",
-      "solspace/craft-freeform": "^3.3.0"
+      "craftcms/cms": "^4.0",
+      "solspace/craft-freeform": "^4.0.8"
     },
     "autoload": {
       "psr-4": {
