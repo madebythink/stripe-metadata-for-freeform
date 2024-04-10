@@ -7,3 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 0.1.0 - 2024-01-12
 ### Added
 - Initial release
+
+## 1.0.0 - 2024-
+
+## 0.4.0 - 2024-04-08
+### Added
+- Plugin supports CraftCMS 4.0 and Freeform 4.0

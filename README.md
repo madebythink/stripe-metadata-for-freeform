@@ -13,8 +13,12 @@ Stripe Metadata for Freeform is a simple plugin which enables attaching informat
 
 ## Example
 
-By default, the plugin will listen to Freeform Submission EVENT_AFTER_SUBMIT event. If the submission has an attached payment or subscription the plugin will attempt to attach metadata. First the plugin will iterate over the form fields and extract any fields with handles beginning with `metadata-`, the rest of the handle will be the metadata field handle in Stripe. It will then attempt to apply the metadata to either the Stripe PaymentIntent and Charge in the case of a single payment, or a Stripe Subscription in the case of a recurrent payment.
+The plugin will listen to Freeform Submission EVENT_AFTER_SUBMIT event. If the submission has an attached payment or subscription the plugin will attempt to attach metadata. First the plugin will iterate over the form fields and extract any fields with handles beginning with `metadata-`, the rest of the handle will be the metadata field handle in Stripe. It will then attempt to apply the metadata to either the Stripe PaymentIntent and Charge in the case of a single payment, or a Stripe Subscription in the case of a recurrent payment.
 
 
+## Screenshots
 
-
+![Screenshot](docs/images/field-in-freeform.png)
+![Screenshot](docs/images/stripe-dashboard-metadata.png)
+![Screenshot](docs/images/stripe-dashboard-subscription-link.png)
+![Screenshot](docs/images/stripe-dashboard-subscription.png)
