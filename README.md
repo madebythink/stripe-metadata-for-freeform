@@ -1,5 +1,5 @@
 
-# Stripe Metadata Helper Plugin for use with Freeform Pro, Craft CMS 3.x
+# Stripe Metadata Helper Plugin for use with Freeform Pro, Craft CMS 3.x|4.x
 
 Stripe Metadata for Freeform is a simple plugin which enables attaching information collected on Freeform Pro payment forms to the underlying Stripe payments and subscriptions as metadata. It does this by detecting fields using a simple field-name matching which it then applies to the Stripe entity (payment or subscription) when the payment succeeds.
 
@@ -7,9 +7,9 @@ Stripe Metadata for Freeform is a simple plugin which enables attaching informat
 
 ## Requirements
 
-* Craft CMS 3.1+
-* PHP 7.0+
-* Solspace Freeform 3.3+ (Pro)
+* Craft CMS 3.1+|4.0+
+* PHP 7.0+|8.0+
+* Solspace Freeform 3.3+|4.0+ (Pro)
 
 ## Overview
 
