@@ -82,13 +82,17 @@ class StripeMetadata extends Plugin
             Event::on(
                 FormsService::class,
                 FormsService::EVENT_AFTER_SUBMIT,
-                $this->eventHandler,
+                function ($event) {
+                    $this->eventHandler($event);
+                },
             );
         } else {
             Event::on(
                 Form::class,
                 Form::EVENT_AFTER_SUBMIT,
-                $this->eventHandler
+                function ($event) {
+                    $this->eventHandler($event);
+                },
             );
         }
     }
